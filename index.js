@@ -21,6 +21,10 @@ app.use('/api/expenses', require('./routes/expenses'));
 app.use('/api/income', require('./routes/income'));
 app.use('/api/budget', require('./routes/budget'));
 
+app.get('/', (req, res) => {
+  res.send('<div style="display:flex , justify-content:center"> server running <title>FinanceGet {backend}</title></div>');
+});
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
