@@ -22,7 +22,7 @@ app.use('/api/income', require('./routes/income'));
 app.use('/api/budget', require('./routes/budget'));
 
 app.get('/', (req, res) => {
-  res.send('<div style="display:flex , justify-content:center"> server running <title>FinanceGet {backend}</title></div>');
+  res.send('<div style="display:flex ;justify-content:center"> server running <title>FinanceGet {backend}</title></div>');
 });
 
 // Start the server
