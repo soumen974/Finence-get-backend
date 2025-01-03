@@ -37,21 +37,35 @@ exports.deleteIncome = async (req, res) => {
 }
 
 exports.updateIncome = async (req, res) => {
-  try{
-    const { amount, source, date , description ,note} = req.body;
-    let income = await Income.findByIdAndUpdate({_id:req.params.id, user:req.user});
-    if(!income) return res.status(404).json({error:'not found'});
+  try {
+    const { amount, source, date, description, note } = req.body;
 
-    if(amount) amount = income.amount;
-    if(source) source = income.source;
-    if(date) date = income.date;
-    if(description) description = income.description;
-    if(note) note = income.note;
+    if (!req.params.id || !req.user) {
+      return res.status(400).json({ error: 'Invalid request parameters' });
+    }
+
+    const income = await Income.findOneAndUpdate(
+      { _id: req.params.id, user: req.user },
+      {},
+      { new: true }
+    );
+
+    if (!income) {
+      return res.status(404).json({ error: 'Income not found' });
+    }
+
+  
+    if (amount !== undefined) income.amount = amount;
+    if (source !== undefined) income.source = source;
+    if (date !== undefined) income.date = date;
+    if (description !== undefined) income.description = description;
+    if (note !== undefined) income.note = note;
+
+    
     await income.save();
-    
-    res.json({mesg:'Updated Successfully'});
-    
-  }catch(err){
-    res.status(500).json({error :`Error : ${err.message}`})
+
+    res.json({ msg: 'Updated Successfully' });
+  } catch (err) {
+    res.status(500).json({ error: `Error: ${err.message}` });
   }
-}
+};
