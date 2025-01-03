@@ -19,6 +19,7 @@ exports.addExpense = async (req, res) => {
     res.json(expense);
   } catch (err) {
     //console.error(err.message);
-    res.status(500).send('Server error');
+    //res.status(500).send('Server error');
+    res.status(500).json({ error: `Error  : ${err.message}` });
   }
 };

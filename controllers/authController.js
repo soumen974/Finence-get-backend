@@ -154,8 +154,8 @@ exports.login = async (req, res) => {
     res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }); // 1 hour
     res.status(200).json({ msg: 'Logged in successfully' });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+   // console.error(err.message);
+    res.status(500).json({ error: `Error : ${err.message}` });
   }
 };
 
