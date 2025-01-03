@@ -4,14 +4,14 @@ const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const cors = require('cors');
 require('dotenv').config();
-
+const corsOptionsDelegate = require ('./middleware/corsOptionsDelegate');
 const app = express();
 
 // Connect to MongoDB
 connectDB();
 
 // Middleware
-app.use(cors());
+app.use(cors(corsOptionsDelegate))
 app.use(bodyParser.json());
 app.use(cookieParser());
 

@@ -5,20 +5,20 @@ exports.getExpenses = async (req, res) => {
     const expenses = await Expense.find({ user: req.user}).sort({ date: -1 });
     res.json(expenses);
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+   // console.error(err.message);
+    res.status(500).send(`Server error ${err.message} `);
   }
 };
 
 exports.addExpense = async (req, res) => {
-  const { amount, category, date } = req.body;
+  const { amount, category, date , description , note} = req.body;
 
   try {
-    const newExpense = new Expense({ user: req.user, amount, category, date });
+    const newExpense = new Expense({ user: req.user, amount, category, date, description, note });
     const expense = await newExpense.save();
     res.json(expense);
   } catch (err) {
-    console.error(err.message);
+    //console.error(err.message);
     res.status(500).send('Server error');
   }
 };
