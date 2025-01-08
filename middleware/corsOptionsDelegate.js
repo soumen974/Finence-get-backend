@@ -2,7 +2,7 @@ const corsOptionsDelegate = function (req, callback) {
   let corsOptions;
   
   // For authenticated CRUD operations
-  if (req.header('Origin') === 'http://localhost:3000' || 
+  if (req.header('Origin') === 'http://localhost:5173' || 
       req.header('Origin') === 'https://financeget.vercel.app') {
     corsOptions = {
       origin: true,
@@ -11,9 +11,8 @@ const corsOptionsDelegate = function (req, callback) {
       optionsSuccessStatus: 200
     }
   } 
-  
-  // For any other origin, deny access
-  else {
+ 
+ else {
     corsOptions = {
       origin: false
     }
