@@ -151,7 +151,7 @@ exports.login = async (req, res) => {
 
     const token = createToken(user);
     
-    res.cookie('token', token, { httpOnly: true, maxAge: 3600000 }); // 1 hour
+    res.cookie('token', token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 }); 
     res.status(200).json({ msg: 'Logged in successfully' });
   } catch (err) {
    // console.error(err.message);
