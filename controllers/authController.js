@@ -161,7 +161,12 @@ exports.login = async (req, res) => {
 };
 
 exports.logout = async (req, res) => {
-  res.cookie('token', '', { httpOnly: true, maxAge: 1 });
+  // res.cookie('token', '', { httpOnly: true, maxAge: 1 });
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'None'
+  });
   res.status(200).json({ msg: 'Logged out successfully' });
 };
 
