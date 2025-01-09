@@ -1,23 +1,23 @@
-const corsOptionsDelegate = function (req, callback) {
+const allowedOrigins = new Set([
+  'http://localhost:5173',
+  'https://financeget.vercel.app',
+]);
+
+const corsOptionsDelegate = (req, callback) => {
   let corsOptions;
   
-  // For authenticated CRUD operations
-  if (req.header('Origin') === 'http://localhost:5173' || 
-      req.header('Origin') === 'https://financeget.vercel.app') {
+  if (allowedOrigins.has(req.header('Origin'))) {
     corsOptions = {
       origin: true,
       methods: ['GET', 'POST', 'PUT', 'DELETE'],
       credentials: true,
-      optionsSuccessStatus: 200
-    }
-  } 
- 
- else {
-    corsOptions = {
-      origin: false
-    }
+      optionsSuccessStatus: 200,
+    };
+  } else {
+    corsOptions = { origin: false };
   }
   
   callback(null, corsOptions);
-}
+};
+
 module.exports = corsOptionsDelegate;
