@@ -111,6 +111,7 @@ exports.verifyEmail = [
 ];
 
 exports.addPassword = [
+  body('name').notEmpty().withMessage('Name is required'),
   body('email').isEmail().withMessage('Invalid email address'),
   body('password').isLength({ min: 5 }).withMessage('Password must be at least 5 characters long'),
   async (req, res) => {

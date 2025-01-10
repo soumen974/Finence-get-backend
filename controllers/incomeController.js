@@ -11,6 +11,20 @@ exports.getIncomes = async (req, res) => {
   }
 };
 
+exports.getIncomeByid = async (req, res) => {
+  try {
+    const income = await Income.findOne({ user: req.user ,_id:req.params.id});
+    if (!income) {
+      return res.status(404).json({ error: 'Income not found' });
+    }
+    res.json(income);
+  } catch (err) {
+    //console.error(err.message);
+   // res.status(500).send('Server error');
+    res.status(500).json({ error: `Error : ${err.message}` });
+  }
+};
+
 exports.addIncome = async (req, res) => {
   const { amount, source, date,description,note } = req.body;
 
