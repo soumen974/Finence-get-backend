@@ -11,10 +11,10 @@ exports.getExpenses = async (req, res) => {
 };
 
 exports.addExpense = async (req, res) => {
-  const { amount, category, date , description , note} = req.body;
+  const { amount, source, date , description , note} = req.body;
 
   try {
-    const newExpense = new Expense({ user: req.user, amount, category, date, description, note });
+    const newExpense = new Expense({ user: req.user, amount, source, date, description, note });
     const expense = await newExpense.save();
     res.json(expense);
   } catch (err) {
