@@ -60,7 +60,7 @@ exports.addExpense = async (req, res) => {
   try {
     const newExpense = new Expense({ user: req.user, amount, source, date, description, note });
     const expense = await newExpense.save();
-    res.json(expense);
+    res.json({ message: 'Expense added successfully'});
   } catch (err) {
     //console.error(err.message);
     //res.status(500).send('Server error');
