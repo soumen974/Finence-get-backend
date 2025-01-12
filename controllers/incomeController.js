@@ -2,7 +2,7 @@ const Income = require('../models/Income');
 
 exports.getIncomes = async (req, res) => {
   try {
-    const incomes = await Income.find({ user: req.user }).sort({ date: -1 });
+    const incomes = await Income.find({ user: req.user }).sort({ date: -1 ,_id: -1});
     res.json(incomes);
   } catch (err) {
     //console.error(err.message);

@@ -2,11 +2,11 @@ const Expense = require('../models/Expense');
 
 exports.getExpenses = async (req, res) => {
   try {
-    const expenses = await Expense.find({ user: req.user}).sort({ date: -1 });
+    const expenses = await Expense.find({ user: req.user}).sort({ date: -1 , _id: -1 });
     res.json(expenses);
   } catch (err) {
-   // console.error(err.message);
-    res.status(500).send(`Server error ${err.message} `);
+    // console.error(err.message);
+    res.status(500).send(`Server error ${err.message}`);
   }
 };
 
