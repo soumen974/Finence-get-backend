@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
 const { getExpenses, addExpense ,getExpenseByid,deleteExpense,updateExpense } = require('../controllers/expenseController');
-const { route } = require('./income');
 
 // Get all expenses
 router.get('/', auth, getExpenses);

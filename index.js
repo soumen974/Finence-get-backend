@@ -20,6 +20,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/expenses', require('./routes/expenses'));
 app.use('/api/income', require('./routes/income'));
 app.use('/api/budget', require('./routes/budget'));
+app.use('/api/reports', require('./routes/aggregatedTransaction'));
 
 app.get('/', (req, res) => {
   res.send('<div style="display:flex ;justify-content:center"> server running <title>FinanceGet {backend}</title></div>');

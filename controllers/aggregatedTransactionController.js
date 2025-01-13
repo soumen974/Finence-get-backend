@@ -1,4 +1,4 @@
-const aggregatedTransactionController = require('../controllers/aggregatedTransactionController');
+const AggregatedTransaction = require('../models/AggregatedTransaction');
 const Expense = require('../models/Expense');
 const Income = require('../models/Income');
 
@@ -45,8 +45,11 @@ try {
 
     await AggregatedTransaction.insertMany(aggregatedTransactions);
 
-    res.status(201).json({ message: 'Aggregated transaction data saved successfully' });
+    const LineChartData = await AggregatedTransaction.find({ user: req.user}).sort({ date: -1 , _id: -1 });
+    
+
+    res.status(201).json({ msg: 'Aggregated transaction data fetched successfully' ,LineChartData });
 } catch (error) {
-    res.status(500).json({ message: 'Error aggregating transaction data', error });
+    res.status(500).json({ msg: 'Error aggregating transaction data', error });
 }
 };
