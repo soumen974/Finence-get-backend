@@ -1,8 +1,10 @@
-const express = require ('express');
+const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/auth');
-const { aggregateTransactionData } = require('../controllers/aggregatedTransactionController');
+const { aggregateTransactionData ,getAvailableYears } = require('../controllers/aggregatedTransactionController'); // Ensure the path is correct
 
-router.get('/LineChartData', auth , aggregateTransactionData);
+// Define a route for POST requests to /LineChartData/:year
+router.post('/LineChartData/:year', auth, aggregateTransactionData);
+router.get('/availableYears', auth, getAvailableYears);
 
 module.exports = router;

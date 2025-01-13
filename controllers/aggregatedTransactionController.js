@@ -2,9 +2,10 @@ const AggregatedTransaction = require('../models/AggregatedTransaction');
 const Expense = require('../models/Expense');
 const Income = require('../models/Income');
 
+const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
 const getMonthName = (date) => {
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return monthNames[date.getMonth()];
+  return MONTH_NAMES[date.getMonth()];
 };
 
 exports.aggregateTransactionData = async (req, res) => {
@@ -13,60 +14,89 @@ exports.aggregateTransactionData = async (req, res) => {
       return res.status(400).json({ error: 'User not found in request' });
     }
 
-    const incomes = await Income.find({ user: req.user });
-    const expenses = await Expense.find({ user: req.user });
-
-    // Initialize aggregatedData with all months set to zero
-    const aggregatedData = {};
-    for (let i = 0; i < 12; i++) {
-      const month = getMonthName(new Date(2025, i));  // Use any year, just to get the month names
-      aggregatedData[month] = { incomePerMonth: 0, expensePerMonth: 0 };
+    const year = parseInt(req.params.year, 10);
+    if (isNaN(year)) {
+      return res.status(400).json({ error: 'Invalid year specified' });
     }
 
-    // Calculate income per month
+    const startDate = new Date(year, 0, 1); 
+    const endDate = new Date(year + 1, 0, 1); 
+
+    // console.log(`Aggregating transactions for year: ${year}`); 
+
+    const incomes = await Income.find({ user: req.user, date: { $gte: startDate, $lt: endDate } });
+    const expenses = await Expense.find({ user: req.user, date: { $gte: startDate, $lt: endDate } });
+
+    if (incomes.length === 0 && expenses.length === 0) {
+      return res.status(404).json({ msg: 'No transactions found for the specified year' });
+    }
+
+    const aggregatedData = {};
+    MONTH_NAMES.forEach(month => {
+      aggregatedData[month] = { income: 0, expense: 0, Net_Savings: 0 };
+    });
+
     incomes.forEach(income => {
       if (income.date instanceof Date && !isNaN(income.date)) {
         const month = getMonthName(income.date);
-        aggregatedData[month].incomePerMonth += income.amount;
+        aggregatedData[month].income += income.amount;
       }
     });
 
-    // Calculate expense per month
     expenses.forEach(expense => {
       if (expense.date instanceof Date && !isNaN(expense.date)) {
         const month = getMonthName(expense.date);
-        aggregatedData[month].expensePerMonth += expense.amount;
+        aggregatedData[month].expense += expense.amount;
       }
     });
 
-    // Aggregate the data and update or insert into database
-    const updatePromises = Object.keys(aggregatedData).map(async month => {
-      const { incomePerMonth, expensePerMonth } = aggregatedData[month];
-      const netSavingsPerMonth = incomePerMonth - expensePerMonth;
-
-      // Update if exists, otherwise insert
-      return AggregatedTransaction.findOneAndUpdate(
-        { user: req.user, month },
-        { incomePerMonth, expensePerMonth, netSavingsPerMonth },
-        { upsert: true, new: true, setDefaultsOnInsert: true }
-      );
+    Object.keys(aggregatedData).forEach(month => {
+      aggregatedData[month].Net_Savings = aggregatedData[month].income - aggregatedData[month].expense;
     });
 
-    await Promise.all(updatePromises);
-
-    // Fetch the updated aggregated transactions
-    const aggregatedTransactions = await AggregatedTransaction.find({ user: req.user }).sort({ month: 1 });
-
-    // Format the data for the frontend
-    const formattedData = aggregatedTransactions.map((transaction) => ({
-      name: transaction.month,
-      income: transaction.incomePerMonth,
-      expense: transaction.expensePerMonth,
-      Net_Savings: transaction.netSavingsPerMonth,
+    const formattedData = MONTH_NAMES.map(month => ({
+      name: month,
+      income: aggregatedData[month].income,
+      expense: aggregatedData[month].expense,
+      Net_Savings: aggregatedData[month].Net_Savings,
     }));
 
     res.status(201).json(formattedData);
   } catch (error) {
-    res.status(500).json({ msg: 'Error aggregating transaction data', error });
+    // console.error('Error aggregating :', error); 
+    res.status(500).json({ msg: 'Error aggregating ', error });
+  }
+};
+
+exports.getAvailableYears = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(400).json({ error: 'User not found in request' });
+    }
+
+    // Helper function to get distinct years from a collection
+    const getDistinctYears = async (Model) => {
+      const dates = await Model.find({ user: req.user }).distinct('date');
+      return dates.map(date => new Date(date).getFullYear());
+    };
+
+    // Fetch distinct years from Income and Expense collections
+    const incomeYears = await getDistinctYears(Income);
+    const expenseYears = await getDistinctYears(Expense);
+
+    // Combine and remove duplicate years
+    const combinedYears = Array.from(new Set([...incomeYears, ...expenseYears]));
+
+    // Sort the years in ascending order
+    combinedYears.sort((a, b) => a - b);
+
+    if (combinedYears.length === 0) {
+      return res.status(404).json({ msg: 'No transaction years found' });
+    }
+
+    res.status(200).json(combinedYears);
+  } catch (error) {
+    // console.error('Error fetching available years:', error); // Log the error for debugging
+    res.status(500).json({ msg: 'Error fetching available years', error });
   }
 };
