@@ -153,7 +153,7 @@ exports.login = async (req, res) => {
     const token = createToken(user);
     
     // res.cookie('token', token, { httpOnly: true, maxAge: 30 * 24 * 60 * 60 * 1000 }); 
-    res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'None' });
+    res.cookie('token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax' });
     res.status(200).json({ msg: 'Logged in successfully' });
   } catch (err) {
    // console.error(err.message);
