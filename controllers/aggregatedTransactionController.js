@@ -74,21 +74,19 @@ exports.getAvailableYears = async (req, res) => {
       return res.status(400).json({ error: 'User not found in request' });
     }
 
-    // Helper function to get distinct years from a collection
     const getDistinctYears = async (Model) => {
       const dates = await Model.find({ user: req.user }).distinct('date');
       return dates.map(date => new Date(date).getFullYear());
     };
 
-    // Fetch distinct years from Income and Expense collections
     const incomeYears = await getDistinctYears(Income);
     const expenseYears = await getDistinctYears(Expense);
 
-    // Combine and remove duplicate years
     const combinedYears = Array.from(new Set([...incomeYears, ...expenseYears]));
 
-    // Sort the years in ascending order
-    combinedYears.sort((a, b) => a - b);
+    combinedYears.sort((b,a ) => a - b);
+
+    
 
     if (combinedYears.length === 0) {
       return res.status(404).json({ msg: 'No transaction years found' });
