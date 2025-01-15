@@ -184,7 +184,7 @@ exports.getAvailableMonthsForCategoryData = async (req, res) => {
       return res.status(404).json({ msg: 'No transaction months found for the specified year' });
     }
 
-    res.status(200).json(combinedMonths);
+    res.status(200).json({incomeMonths,expenseMonths});
   } catch (error) {
     console.error('Error fetching available months:', error); // Log the error for debugging
     res.status(500).json({ msg: 'Error fetching available months', error });
