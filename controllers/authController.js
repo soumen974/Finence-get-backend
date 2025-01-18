@@ -51,7 +51,7 @@ const sendVerificationEmail = async (email, code) => {
 };
 
 const createToken = (user) => {
-  return jwt.sign({ id: user.id ,name: user.name}, process.env.JWT_SECRET, { expiresIn: '30d' });
+  return jwt.sign({ id: user.id ,name: user.name,email:user.email,mobile_number:user.mobile_number}, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
 
 exports.register = [ 
@@ -175,7 +175,10 @@ exports.protectedCheck = async (req,res) => {
   if (req.user) {
     res.status(200).json({ message: "Authenticated",
     id: req.user,
-    name: req.name});
+    name: req.name,
+    email: req.email,
+    mobile_number: req.mobile_number,
+  });
   }else{
     res.status(401).json({msg:"Unauthorised"});
   }
